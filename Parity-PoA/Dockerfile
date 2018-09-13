@@ -15,7 +15,14 @@ WORKDIR /home/ubuntu
 RUN /bin/bash -c 'bash <(curl https://raw.githubusercontent.com/Luphia/SIMPLE/master/shell/install-bc2.sh -kL)'
 RUN /bin/bash -c 'bash <(curl https://get.parity.io -kL)'
 RUN mkdir parity
+RUN mkdir parity/keys
 COPY genesis.json /home/ubuntu/parity/genesis.json
 COPY config.toml /home/ubuntu/parity/config.toml
+ENV keypw $(date +%s | sha256sum | base64 | head -c 32 ; echo)
+RUN echo keypw > parity/.pw
+ENV newkey echo -e "${keypw}\n${keypw}" | parity account new --keys-path /home/ubuntu/parity/keys
+RUN sed -i 's/0x7a96a850eddd0f635b9d7ec867b13a380069bedc/${newkey}/g' /home/ubuntu/parity/genesis.json
+RUN sed -i 's/0x7a96a850eddd0f635b9d7ec867b13a380069bedc/${newkey}/g' /home/ubuntu/parity/config.toml
 
 CMD parity --config $HOME/parity/config.toml
+#CMD /bin/bash
