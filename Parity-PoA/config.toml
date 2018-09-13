@@ -20,7 +20,7 @@ password = ["/home/ubuntu/parity/.pw"]
 keys_iterations = 10240
 
 [rpc]
-port = 5645
+port = 8545
 interface = "0.0.0.0"
 cors = ["all"]
 #apis = ["web3", "eth", "net", "personal", "parity", "parity_set", "traces", "rpc", "parity_accounts"]
