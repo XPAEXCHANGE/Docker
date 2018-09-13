@@ -15,5 +15,7 @@ WORKDIR /home/ubuntu
 RUN /bin/bash -c 'bash <(curl https://raw.githubusercontent.com/Luphia/SIMPLE/master/shell/install-bc2.sh -kL)'
 RUN /bin/bash -c 'bash <(curl https://get.parity.io -kL)'
 RUN mkdir parity
+COPY genesis.json /home/ubuntu/parity/genesis.json
+COPY config.toml /home/ubuntu/parity/config.toml
 
-CMD /bin/bash
+CMD parity --config $HOME/parity/config.toml
