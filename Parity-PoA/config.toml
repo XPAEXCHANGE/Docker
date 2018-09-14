@@ -16,7 +16,7 @@ engine_signer = "0x7a96a850eddd0f635b9d7ec867b13a380069bedc"
 
 [account]
 unlock = ["0x7a96a850eddd0f635b9d7ec867b13a380069bedc"]
-password = ["/home/ubuntu/parity/.pw"]
+password = ["/home/ubuntu/parity/keys/MainChain/key.password"]
 keys_iterations = 10240
 
 [rpc]
