@@ -24,6 +24,5 @@ password = "password"
 [api]
 pathname = [
   "get | /,/version | Static.Utils.readPackageInfo | auth | hashcash",
-  "post | / | Bot.BlockScanner.jsonrpc | auth",
-  "get | /test | Static.Test.f1"
+  "post | / | Bot.BlockScanner.jsonrpc | auth"
 ]
