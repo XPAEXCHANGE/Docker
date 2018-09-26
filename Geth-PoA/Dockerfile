@@ -1,0 +1,22 @@
+FROM ubuntu:16.04
+LABEL maintainer="Luphia (luphia.chang@tideisun.com)"
+EXPOSE 8545 8546
+
+WORKDIR /root
+RUN apt-get update
+RUN apt-get install openssl libtool autoconf automake uuid-dev build-essential gcc g++ python-software-properties unzip make git libcap2-bin vim curl wget sudo screen -y
+RUN apt-get install software-properties-common -y
+RUN add-apt-repository ppa:ethereum/ethereum -y
+RUN apt-get update
+RUN apt-get install ethereum -y
+RUN /bin/bash -c 'bash <(curl https://raw.githubusercontent.com/Luphia/SIMPLE/master/shell/install-env.sh -kL)'
+
+CMD keypw1=$(date +%s | sha256sum | base64 | head -c 32 ; echo) && \
+keypw2=$(date +%s | sha256sum | base64 | head -c 32 ; echo) && \
+keypw3=$(date +%s | sha256sum | base64 | head -c 32 ; echo) && \
+key1=$(echo "$keypw1\n$keypw1" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
+key2=$(echo "$keypw2\n$keypw2" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
+key3=$(echo "$keypw3\n$keypw3" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
+echo "BOLT\n2\n2\n3\n${key1}\n\n${key1}\n${key2}\n${key3}\n\n1\n2\n2\n\n" | puppeth || true && \
+geth init BOLT.json --datadir ./data && \
+echo "${keypw1}" | geth --datadir ./data --keystore /home/ubuntu/keystore --unlock ${key1} --mine --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpccorsdomain '*' --rpcapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug --ws --wsaddr 0.0.0.0 --wsport 8546 --wsorigins '*' --wsapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug
