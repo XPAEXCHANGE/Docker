@@ -17,6 +17,7 @@ services:
 
   gethpoa:
     image: geth-poa
+    container_name: BoltGethPoA
     volumes:
       - ~/BoltGethPoA:/home/ubuntu/shares
     expose:

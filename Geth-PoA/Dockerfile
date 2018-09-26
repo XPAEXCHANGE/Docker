@@ -10,13 +10,18 @@ RUN add-apt-repository ppa:ethereum/ethereum -y
 RUN apt-get update
 RUN apt-get install ethereum -y
 RUN /bin/bash -c 'bash <(curl https://raw.githubusercontent.com/Luphia/SIMPLE/master/shell/install-env.sh -kL)'
+RUN mkdir /keypw
+COPY keyparser /keyparser
+WORKDIR /keyparser
+RUN npm i --unsafe-perm
 
-CMD keypw1=$(date +%s | sha256sum | base64 | head -c 32 ; echo) && \
-keypw2=$(date +%s | sha256sum | base64 | head -c 32 ; echo) && \
-keypw3=$(date +%s | sha256sum | base64 | head -c 32 ; echo) && \
-key1=$(echo "$keypw1\n$keypw1" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
-key2=$(echo "$keypw2\n$keypw2" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
-key3=$(echo "$keypw3\n$keypw3" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
+CMD keypw=$(date +%s | sha256sum | base64 | head -c 32 ; echo) && \
+key1=$(echo "${keypw}\n${keypw}" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
+key2=$(echo "${keypw}\n${keypw}" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
+key3=$(echo "${keypw}\n${keypw}" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
+mkdir /home/ubuntu/keypw && \
+echo "${keypw}" > /keyparser/keypw && \
+node . && \
 echo "BOLT\n2\n2\n3\n${key1}\n\n${key1}\n${key2}\n${key3}\n\n1\n2\n2\n\n" | puppeth || true && \
-geth init BOLT.json --datadir ./data && \
-echo "${keypw1}" | geth --datadir ./data --keystore /home/ubuntu/keystore --unlock ${key1} --mine --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpccorsdomain '*' --rpcapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug --ws --wsaddr 0.0.0.0 --wsport 8546 --wsorigins '*' --wsapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug
+geth init /keyparser/BOLT.json --datadir /root/data && \
+echo "${keypw}" | geth --datadir /root/data --keystore /home/ubuntu/keystore --unlock ${key1} --mine --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpccorsdomain '*' --rpcapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug --ws --wsaddr 0.0.0.0 --wsport 8546 --wsorigins '*' --wsapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug
