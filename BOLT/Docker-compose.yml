@@ -16,7 +16,7 @@ services:
       - POSTGRES_PASSWORD=zaq12wsx
 
   gethpoa:
-    image: geth-poa
+    build: ../Bolt-Geth
     container_name: BoltGethPoA
     volumes:
       - bolt-key:/home/ubuntu/shares

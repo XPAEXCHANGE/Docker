@@ -22,8 +22,10 @@ WORKDIR /home/ubuntu
 RUN git clone https://github.com/BOLT-Protocol/contracts
 WORKDIR /home/ubuntu/contracts
 RUN git checkout v1.1.1
-RUN npm install
-RUN npm install -g truffle
+RUN npm install --unsafe-perm
+RUN npm install -g truffle --unsafe-perm
+RUN cp env.js.example env.js
+WORKDIR /keyparser
 
 CMD keypw=$(date +%s | sha256sum | base64 | head -c 32 ; echo) && \
 key1=$(echo "${keypw}\n${keypw}" | geth account new --keystore /home/ubuntu/keystore | grep -Po "\{[0-9a-f]*\}" | cut -c 2-41) && \
@@ -34,4 +36,5 @@ echo "${keypw}" > /keyparser/keypw && \
 node . && \
 echo "BOLT\n2\n2\n3\n${key1}\n\n${key1}\n${key2}\n${key3}\n\n1\n2\n2\n\n" | puppeth || true && \
 geth init /keyparser/BOLT.json --datadir /root/data && \
-echo "${keypw}" | geth --datadir /root/data --keystore /home/ubuntu/keystore --unlock ${key1} --mine --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpccorsdomain '*' --rpcapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug --ws --wsaddr 0.0.0.0 --wsport 8546 --wsorigins '*' --wsapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug
+echo "${keypw}" | geth --datadir /root/data --keystore /home/ubuntu/keystore --unlock ${key1} --mine --rpc --rpcaddr 0.0.0.0 --rpcport 8545 --rpccorsdomain '*' --rpcapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug --ws --wsaddr 0.0.0.0 --wsport 8546 --wsorigins '*' --wsapi personal,admin,db,eth,net,web3,miner,shh,txpool,debug & \
+echo "Yo!!!"
